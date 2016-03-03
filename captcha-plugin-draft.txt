@@ -107,6 +107,13 @@ We provisionally instantiate these with
 
 [TODO: I would really like to use something other than RSA, but haven't found
 satisfactory research on alternative blind signature schemes.]
+[Alex: It could be possible to use a DSA-style blind signature (see
+http://blog.cryptographyengineering.com/p/note-on-blind-signature-schemes.html).
+The protocol requires three steps, the additional step is required since the
+server initially sends a random element for each signature that needs to be
+blindly signed. While this is not ideal it may be possible to incorporate
+this into the structure below so that the plugin asks for 10000 elements of
+randomness from the server when it generates the nonces.]
 
 0.4. Participants
 
@@ -192,7 +199,7 @@ satisfactory research on alternative blind signature schemes.]
 
         "REQUEST" || server-key || the origin hostname || the "timestamp" field
 
-  The <meta> tag will commonly be included in a challenge page. 
+  The <meta> tag will commonly be included in a challenge page.
   When encountering such a <meta> tag, a compatible client SHOULD
 
      * check that the server key is one of the pinned server token keys
@@ -234,6 +241,10 @@ satisfactory research on alternative blind signature schemes.]
   request as coming from a client that solved a CAPTCHA recently. It SHOULD NOT
   persist this information, as the client MUST spend a different nonce for each
   request.
+
+[Alex: This seems like it could be interpreted as mac-then-encrypt because the
+nonce is decrypted before it can be used to key the HMAC. However, I can't see a
+way around this and it doesn't seem to be causing any problems.]
 
 1.2.1. Double-spend detection
 
@@ -313,6 +324,9 @@ Appendix D: Security Considerations [SECURITY]
 
     [TODO: We've thought about this, but we're far from experts in anonymity.
     Review is badly needed!]
+    [Alex: Is it possible to verify that each plugin doesn't store a unique key
+    for each partcular browser? Otherwise the same attack could be carried out
+    without the user's knowledge.]
 
   Interception of redemption tokens by malicious exits
 
